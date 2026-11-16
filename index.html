@@ -104,7 +104,9 @@ button{background:none;border:0;padding:0;cursor:pointer;text-align:inherit}
 .mp::before{content:"";position:absolute;left:50%;top:0;bottom:0;border-left:1px solid #cfe6d688}
 .mp::after{content:"";position:absolute;left:50%;top:50%;width:22%;aspect-ratio:1;border:1px solid #cfe6d688;border-radius:50%;transform:translate(-50%,-50%)}
 .dot{position:absolute;width:13px;height:13px;border-radius:50%;background:#0f2a1c;transform:translate(-50%,-50%);z-index:1}
+.rr .rn{text-align:left}
 .dot.d1{background:#f59a23}.dot.d2{background:#63e36f;box-shadow:0 0 0 2px #fff}
+.dot.sel{box-shadow:0 0 0 2px #fff,0 0 0 5px var(--accent)}
 .cen{text-align:center}
 .seg{display:flex;justify-content:center;margin:6px 0}
 .seg button{padding:6px 10px;font-weight:600;font-size:13px;border:1px solid var(--line);background:var(--tile2)}
@@ -316,7 +318,11 @@ const GRP={tek:'Teknik',dur:'Duran Toplar',zih:'Zihinsel',fiz:'Fiziksel'}, GORD=
 const FOOT=['','Çok Zayıf','Zayıf','Makul','Kuvvetli','Çok Kuvvetli'];
 const POSN={KL:'Kaleci',DF:'Defans (Merkez)',OS:'Orta Saha (Merkez)',FV:'Santrafor (Merkez)'};
 // mini saha noktaları (hücum sağa): KL, 3 DF, 3 OS, 3 FV
-const DOTS=[[8,50],[32,22],[32,50],[32,78],[57,22],[57,50],[57,78],[83,22],[83,50],[83,78]];
+const DOTS=[[8,50],[32,22],[32,50],[32,78],[57,22],[57,50],[57,78],[83,22],[83,50],[83,78],[44.5,50],[70,50]];
+const DOTG=['KL','DFW','DFM','DFW','OSW','OSM','OSW','FVW','FVM','FVW','DOS','OOS'];
+const DOTN=['Kaleci','Bek (Sol)','Stoper','Bek (Sağ)','Orta Saha (Sol)','Orta Saha (Merkez)','Orta Saha (Sağ)','Kanat Forvet (Sol)','Santrafor','Kanat Forvet (Sağ)','Defansif Orta Saha','Ofansif Orta Saha'];
+const pselOf=p=>{const m=p.posmap||[];return p.psel>=0&&p.psel<DOTS.length?p.psel:Math.max(0,m.indexOf(2))};
+const rpickOf=(p,ph)=>{const d=pselOf(p),i=((p.rpick||{})[d]||{})[ph]||0;return ROLE[DOTG[d]][ph][i]?i:0};
 const MAINDOT={KL:0,DF:2,OS:5,FV:8};
 // 7'ye 7 dizilişler: [x%, y%, mevki, varsayılan rol]
 const G=[50,90,'KL','Kaleci'];
@@ -463,6 +469,7 @@ const roleName=(g,phase,ab)=>{const r=ROLE[g][phase].find(x=>x[0]===ab);return r
 // mevki uygunluğu: oyuncunun Pozisyonlar sahasındaki noktalarına göre
 const SUIT=[['Uygun değil','#e0524f'],['Zorlanır','#f0a03a'],['Yapabilir','#b6e04f'],['Doğal','#4fe07f']];
 function suit(p,s){const m=p.posmap||[];if(s[2]==='KL')return m[0]===2?3:m[0]===1?2:0;
+  if(s[2]==='DOS'||s[2]==='OOS'){const x=m[s[2]==='DOS'?10:11];return x===2?3:x===1?2:m[5]?2:(m[4]||m[6])?1:0}
   const line=s[2]==='DF'?1:s[2]==='FV'?7:4,side=s[0]<25?0:s[0]>75?2:1,v=m[line+side];
   if(m[0]===2&&!m[line]&&!m[line+1]&&!m[line+2])return 0;
   return v===2?3:v===1?2:(m[line]||m[line+1]||m[line+2])?1:0}
@@ -485,7 +492,7 @@ function clean(d){
       ph.pos=Array.isArray(ph.pos)&&ph.pos.length===7&&ph.pos.every(q=>Array.isArray(q))?ph.pos.map(q=>[int(q[0],0,100,50),int(q[1],0,100,50)]):null})});
     t.players.forEach(p=>{p.id=id(p.id)||uid();
       p.photo=typeof p.photo==='string'&&/^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+\/=]+$/.test(p.photo)?p.photo:'';
-      p.posmap=DOTS.map((_,i)=>int((p.posmap||[])[i],0,2,0)); p.last5=[0,1,2,3,4].map(i=>int((p.last5||[])[i],0,3,0));
+      p.posmap=DOTS.map((_,i)=>int((p.posmap||[])[i],0,2,0)); p.psel=int(p.psel,0,DOTS.length-1,-1); {const rp0=p.rpick&&typeof p.rpick==='object'?p.rpick:{};p.rpick={};DOTS.forEach((_,i)=>{const v=rp0[i];if(v&&typeof v==='object')p.rpick[i]={ip:int(v.ip,0,20,0),oop:int(v.oop,0,20,0)}})} p.last5=[0,1,2,3,4].map(i=>int((p.last5||[])[i],0,3,0));
       p.footL=int(p.footL,1,5,2);p.footR=int(p.footR,1,5,5);p.ca=half(p.ca);p.pa=half(p.pa);
       const rs=p.rsel&&typeof p.rsel==='object'?p.rsel:{};p.rsel={ip:int(rs.ip,0,50,0),oop:int(rs.oop,0,50,0)};
       if(!p.roles||typeof p.roles!=='object')p.roles={};['ip','oop'].forEach(k=>{if(!Array.isArray(p.roles[k]))p.roles[k]=[];p.roles[k].forEach(r=>r.s=half(r.s))});
@@ -530,14 +537,14 @@ function drawWarn(){$('warn').innerHTML=storeOk?'':'<p class="warn">Bu tarayıc�
 
 function emptyCard(){return `<section class="pn emptyc"><h3>Kadronu kur</h3><p class="note">Henüz oyuncu yok. İsim, soyisim, uyruk, boy, ayak ve 1-20 arası bütün nitelikleri sen belirlersin.</p>
   <button class="btn" data-act="addPlayer">Oyuncu oluştur</button><button class="btn ghost" data-act="demo">Örnek kadroyla başla</button></section>`}
-function attrRows(g){const p=P(),rp=RPH(),r=p.roles[rp][p.rsel[rp]],rk=r&&roleKeys(r.n),fl=a=>rk?(rk.k.includes(a[0])?1:rk.p.includes(a[0])?2:0):(a[2]||0);
+function attrRows(g){const p=P(),rp=RPH(),rk=roleKeys(ROLE[DOTG[pselOf(p)]][rp][rpickOf(p,rp)][1]),fl=a=>rk?(rk.k.includes(a[0])?1:rk.p.includes(a[0])?2:0):(a[2]||0);
   return p.attrs[g].map((a,i)=>{const k=fl(a);return `<button class="ar ${k?'k'+k:''}" data-attr="${g}.${i}"><span>${esc(a[0])}</span><span class="av ${cls(a[1]===''?'':+a[1])}">${a[1]===''?'–':esc(a[1])}</span></button>`}).join('')}
 function footH(k,label){const v=+P()[k]||1,c=v<=2?'#f0883a':v===3?'#e2c93b':'#4fe07f';return `<button data-foot="${k}"><span class="lbl">${label}</span><b>${FOOT[v]}</b><span class="bars">${[1,2,3,4,5].map(i=>`<i style="${i<=v?'background:'+c:''}"></i>`).join('')}</span></button>`}
 
 function viewProfil(){
   const t=T(), p=P();
   if(!p) return emptyCard();
-  const ini=(((p.first||'')[0]||'')+((p.last||'')[0]||'')).toUpperCase(), rp=RPH(), a=avg(p);
+  const ini=(((p.first||'')[0]||'')+((p.last||'')[0]||'')).toUpperCase(), rp=RPH(), a=avg(p), ps=pselOf(p), rsel=rpickOf(p,rp);
   const sub=`<div class="subbar"><select class="sel" id="playerSel" aria-label="Oyuncu seç">${t.players.map(x=>`<option value="${x.id}" ${x.id===p.id?'selected':''}>${esc(nm(x))}</option>`).join('')}</select>
     <button class="stab ${S.ptab!=='kariyer'?'on':''}" data-ptab="genel">Genel Bakış</button><button class="stab ${S.ptab==='kariyer'?'on':''}" data-ptab="kariyer">Kariyer</button>
     ${S.edit?'<button class="mini" data-act="addPlayer" style="margin-left:auto">Yeni oyuncu</button>':''}</div>`;
@@ -563,11 +570,12 @@ function viewProfil(){
   const gk=p.attrs.tek[0]&&p.attrs.tek[0][0]===KAL[0];
   return sub+hdr+`<section class="pn main">
     <div class="cpos"><p class="ct"><span>Pozisyonlar</span></p><b>${F('p.pos','Kısa mevki (KL, DF, OS, FV)','Mevki')}</b>
-      <div class="mp">${DOTS.map((d,i)=>`<button class="dot d${p.posmap[i]||0}" data-dot="${i}" style="left:${d[0]}%;top:${d[1]}%" aria-label="Pozisyon noktası"></button>`).join('')}</div>
-      <div class="cen">${esc(p.posname)}</div>
+      <div class="mp">${DOTS.map((d,i)=>`<button class="dot d${p.posmap[i]||0} ${i===ps?'sel':''}" data-dot="${i}" style="left:${d[0]}%;top:${d[1]}%" aria-label="${DOTN[i]}"></button>`).join('')}</div>
+      <div class="cen"><b>${DOTN[ps]}</b> · ${['Oynayamaz','Yapabilir','Doğal'][p.posmap[ps]||0]}</div>
+      ${S.edit?'<p class="note cen">Noktaya dokun: o mevkinin rolleri açılır. Seçili noktaya tekrar dokun: oynayabilirliği değişir.</p>':''}
       <div class="seg"><button data-rph="ip" class="${rp==='ip'?'on':''}">${PHN.ip}</button><button data-rph="oop" class="${rp==='oop'?'on':''}">${PHN.oop}</button></div>
-      <p class="ct"><span>Seç &nbsp; Yetenek (niteliklerden) &nbsp; Rol</span>${S.edit?'<button class="mini" data-act="addRole">Rol ekle</button>':''}</p>
-      ${p.roles[rp].map((r,i)=>`<div class="rr ${p.rsel[rp]===i?'on':''}"><button class="rad" data-rsel="${i}" aria-label="Rolü seç"></button>${starsH((x=>x==null?(+r.s||0):x)(roleStars(p,r.n)),`data-rstar="${i}"`)}<span class="rn">${F('p.roles.'+rp+'.'+i+'.n','Rol adı','Rol')}</span>${S.edit?`<button class="x" data-act="delRole" data-i="${i}" aria-label="Rolü sil">×</button>`:''}</div>`).join('')}
+      <p class="ct"><span>Seç &nbsp; Yetenek &nbsp; Rol</span></p>
+      ${ROLE[DOTG[ps]][rp].map((r,i)=>`<div class="rr ${rsel===i?'on':''}"><button class="rad" data-rsel="${i}" aria-label="Rolü seç"></button>${starsH(roleStars(p,r[1])||0,'')}<button class="rn" data-rsel="${i}">${r[1]}</button></div>`).join('')}
     </div>
     <div><p class="ct"><span>${gk?'Kalecilik':'Teknik'}</span>${S.edit?`<button class="mini" data-act="gk">${gk?'Oyuncu':'Kaleci'}</button>`:''}</p>${attrRows('tek')}<p class="ct">Duran Toplar</p>${attrRows('dur')}</div>
     <div><p class="ct">Zihinsel</p>${attrRows('zih')}</div>
@@ -874,8 +882,8 @@ document.addEventListener('click',e=>{
   const t=T(), p=P();
   if(m=q('[data-star]')){if(S.edit){const k=m.dataset.star,i=+m.dataset.i;p[k]=(+p[k]===i)?i-.5:i;if(k==='ca')p.caAuto=false;save();draw()}return}
   if(m=q('[data-rstar]')){if(S.edit){const r=p.roles[RPH()][+m.dataset.rstar],i=+m.dataset.i;r.s=(+r.s===i)?i-.5:i;save();draw()}return}
-  if(m=q('[data-rsel]')){p.rsel[RPH()]=+m.dataset.rsel;save();draw();return}
-  if(m=q('[data-dot]')){if(S.edit){const i=+m.dataset.dot;p.posmap[i]=((p.posmap[i]||0)+1)%3;save();draw()}return}
+  if(m=q('[data-rsel]')){const d=pselOf(p);if(!p.rpick||typeof p.rpick!=='object')p.rpick={};p.rpick[d]=Object.assign({},p.rpick[d],{[RPH()]:+m.dataset.rsel});save();draw();return}
+  if(m=q('[data-dot]')){const i=+m.dataset.dot;if(pselOf(p)!==i)p.psel=i;else if(S.edit)p.posmap[i]=((p.posmap[i]||0)+1)%3;save();draw();return}
   if(m=q('[data-foot]')){if(S.edit){const k=m.dataset.foot;p[k]=(+p[k]||1)%5+1;save();draw()}return}
   if(m=q('[data-l5]')){if(S.edit){const i=+m.dataset.l5;p.last5[i]=((p.last5[i]||0)+1)%4;save();draw()}return}
   if(m=q('[data-k]')){if(S.edit)editField(m.dataset.k,m.dataset.t);return}
@@ -937,5 +945,5 @@ window.HM={get:()=>S,set:d=>{d=clean(d);if(!d)return;S=d;persist();draw()},onSav
 draw();
 })();
 </script>
-<script type="module" src="cloud.js?v=1794861411"></script>
+<script type="module" src="cloud.js?v=1794862181"></script>
 </body></html>
