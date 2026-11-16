@@ -349,7 +349,7 @@ function mkPlayer(o){
     season:[{c:'Lig',mac:'0',gol:'0',asist:'0',xg:'0',pen:'0',mom:'0',sar:'0',kir:'0'}],career:[],history:[]},o);
 }
 function mkTeam(o){return Object.assign({id:uid(),name:'Takımım',short:'TKM',sub:'Halısaha Ligi',c1:'#1f7a3d',c2:'#ffffff',date:today(),next:'Sıradaki maç · 5 güne',time:'21:00',mentality:'Dengeli',players:[],pids:['','','','','','',''],
-  ph:{ip:{f:'2-3-1',roles:defRoles('2-3-1',0)},oop:{f:'3-2-1',roles:defRoles('3-2-1',1)}},tv:4},o)}
+  ph:{ip:{f:'2-3-1',roles:defRoles('2-3-1',0)},oop:{f:'3-2-1',roles:defRoles('3-2-1',1)}},tv:5},o)}
 function demoTeam(){
   const L=[['1','Emre','Yıldırım','KL',12,'31','190 cm'],['4','Burak','Aksoy','DF',11,'29','186 cm'],['5','Kerem','Doğan','DF',10,'34','183 cm'],
     ['8','Onur','Şahin','OS',13,'27','176 cm'],['7','Mert','Kaplan','OS',12,'24','174 cm'],['11','Deniz','Arslan','OS',11,'26','179 cm'],
@@ -395,13 +395,13 @@ const ROLE={
  FVW:{ip:[['İF','İç Forvet'],['KFV','Kanat Forvet'],['İK','İçe Kat Eden Kanat'],['OKN','Oyun Kurucu Kanat'],['KNT','Kanat']],
       oop:[['İBK','İçeride Bekleyen Kanat'],['TK','Takipçi Kanat'],['KBK','Kanatta Bekleyen Kanat'],['KNT','Kanat']]}
 };
-const slotGrp=s=>{const w=s[0]<35||s[0]>65,c=s[2];return c==='KL'?'KL':c==='DF'?(w?'DFW':'DFM'):c==='DOS'?'DOS':c==='OOS'?'OOS':c==='OS'?(w?'OSW':'OSM'):(w?'FVW':'FVM')};
+const slotGrp=s=>{const w=s[0]<25||s[0]>75,c=s[2];return c==='KL'?'KL':c==='DF'?(w?'DFW':'DFM'):c==='DOS'?'DOS':c==='OOS'?'OOS':c==='OS'?(w?'OSW':'OSM'):(w?'FVW':'FVM')};
 const defRoles=(fk,ph)=>FORM[fk].map(s=>ROLE[slotGrp(s)][ph?'oop':'ip'][0][0]);
 const roleName=(g,phase,ab)=>{const r=ROLE[g][phase].find(x=>x[0]===ab);return r?r[1]:ab};
 // mevki uygunluğu: oyuncunun Pozisyonlar sahasındaki noktalarına göre
 const SUIT=[['Uygun değil','#e0524f'],['Zorlanır','#f0a03a'],['Yapabilir','#b6e04f'],['Doğal','#4fe07f']];
 function suit(p,s){const m=p.posmap||[];if(s[2]==='KL')return m[0]===2?3:m[0]===1?2:0;
-  const line=s[2]==='DF'?1:s[2]==='FV'?7:4,side=s[0]<35?0:s[0]>65?2:1,v=m[line+side];
+  const line=s[2]==='DF'?1:s[2]==='FV'?7:4,side=s[0]<25?0:s[0]>75?2:1,v=m[line+side];
   if(m[0]===2&&!m[line]&&!m[line+1]&&!m[line+2])return 0;
   return v===2?3:v===1?2:(m[line]||m[line+1]||m[line+2])?1:0}
 function fit(p,f,i){const g=slotGrp(f[i]),n=roleName(g,'ip',T().ph.ip.roles[i]),r=((p.roles&&p.roles.ip)||[]).find(x=>x.n===n);
@@ -560,7 +560,7 @@ function viewKadro(){
   </div></section></div>`;
 }
 
-const slotLabel=(f,i)=>{const s=f[i];return s[2]==='KL'?'KL':s[2]+' ('+(s[0]<35?'Sl':s[0]>65?'Sğ':'M')+')'};
+const slotLabel=(f,i)=>{const s=f[i];return s[2]==='KL'?'KL':s[2]+' ('+(s[0]<25?'Sl':s[0]>75?'Sğ':s[0]<45?'MSl':s[0]>55?'MSğ':'M')+')'};
 const pc=c=>c==='KL'||c==='DF'?'pg':c==='FV'?'pk':'pp';
 const sumS=(p,k)=>p.season.reduce((x,r)=>x+num(r[k]),0);
 // Takım talimatları: [taraf, grup, [[anahtar, ad, seçenekler, varsayılan]]]
@@ -644,7 +644,7 @@ function draw(){
   const ids=new Set(t.players.map(p=>p.id)); t.pids=t.pids.map(x=>ids.has(x)?x:'');
   if(!Array.isArray(t.bench)) t.bench=t.players.map(p=>p.id).filter(x=>!t.pids.includes(x)).slice(0,5);
   t.bench=t.bench.filter(x=>ids.has(x)&&!t.pids.includes(x));
-  if(t.tv!==4){t.ph.ip.roles=defRoles(t.ph.ip.f,0);t.ph.oop.roles=defRoles(t.ph.oop.f,1);t.tv=4;t.opp=t.opp||'Rakip Takım';t.tacName=t.tacName||'Taktik 1';t.system=t.system||'Sıfırdan'}
+  if(t.tv!==5){t.ph.ip.roles=defRoles(t.ph.ip.f,0);t.ph.oop.roles=defRoles(t.ph.oop.f,1);t.tv=5;t.opp=t.opp||'Rakip Takım';t.tacName=t.tacName||'Taktik 1';t.system=t.system||'Sıfırdan'}
   if(!t.instr)t.instr={}; if(!Array.isArray(t.tacs)){t.tacs=[{}];t.tacI=0}
   drawTop(); drawWarn();
   $('main').innerHTML=S.tab==='kadro'?viewKadro():S.tab==='taktik'?viewTaktik():viewProfil();
