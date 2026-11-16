@@ -349,7 +349,7 @@ function mkPlayer(o){
     season:[{c:'Lig',mac:'0',gol:'0',asist:'0',xg:'0',pen:'0',mom:'0',sar:'0',kir:'0'}],career:[],history:[]},o);
 }
 function mkTeam(o){return Object.assign({id:uid(),name:'Takımım',short:'TKM',sub:'Halısaha Ligi',c1:'#1f7a3d',c2:'#ffffff',date:today(),next:'Sıradaki maç · 5 güne',time:'21:00',mentality:'Dengeli',players:[],pids:['','','','','','',''],
-  ph:{ip:{f:'2-3-1',roles:defRoles('2-3-1',0)},oop:{f:'3-2-1',roles:defRoles('3-2-1',1)}},tv:3},o)}
+  ph:{ip:{f:'2-3-1',roles:defRoles('2-3-1',0)},oop:{f:'3-2-1',roles:defRoles('3-2-1',1)}},tv:4},o)}
 function demoTeam(){
   const L=[['1','Emre','Yıldırım','KL',12,'31','190 cm'],['4','Burak','Aksoy','DF',11,'29','186 cm'],['5','Kerem','Doğan','DF',10,'34','183 cm'],
     ['8','Onur','Şahin','OS',13,'27','176 cm'],['7','Mert','Kaplan','OS',12,'24','174 cm'],['11','Deniz','Arslan','OS',11,'26','179 cm'],
@@ -367,15 +367,33 @@ function fresh(){const t=mkTeam({});return{v:3,cur:t.id,sel:'',tab:'profil',ptab
 
 // Mevki gruplarına göre roller: [kısaltma, ad] (topa sahipken / top rakipteyken)
 const ROLE={
- KL:{ip:[['KL','Kaleci'],['OKK','Oyun Kuran Kaleci'],['GK','Garantici Kaleci']],oop:[['KL','Kaleci'],['LK','Libero Kaleci'],['ÇK','Çizgi Kalecisi']]},
- DFM:{ip:[['S','Stoper'],['OKS','Oyun Kuran Stoper'],['AİS','Atağa İştirak Eden Stoper'],['GS','Garantici Stoper']],oop:[['S','Stoper'],['ÖS','Öne Çıkan Stoper'],['KS','Kademeye Giren Stoper']]},
- DFW:{ip:[['B','Bek'],['KB','Kanat Bek'],['İB','İçe Kat Eden Bek'],['OKB','Oyun Kuran Kanat Bek']],oop:[['SB','Savunmacı Bek'],['BB','Baskıcı Bek'],['B','Bek']]},
- DOS:{ip:[['DOS','Defansif Orta Saha'],['GOK','Geriden Oyun Kurucu'],['YS','Yarı Stoper']],oop:[['DOS','Defansif Orta Saha'],['PDO','Perdeleyen DOS'],['GD','Geriye Yaslanan DOS']]},
- OSM:{ip:[['OS','Merkez Orta Saha'],['OK','Oyun Kurucu'],['İOK','İleri Oyun Kurucu'],['SRB','Serbest Rol'],['KOS','Koridor Orta Sahası']],oop:[['OS','Merkez Orta Saha'],['BOS','Baskıcı Orta Saha'],['POS','Perdeleyen Orta Saha'],['DOS','Defansif Orta Saha']]},
- OSW:{ip:[['KNT','Kanat'],['İK','İçe Kat Eden Kanat'],['OKN','Oyun Kuran Kanat'],['KOS','Kanat Orta Saha']],oop:[['DKO','Destek Veren Kanat'],['TK','Takipçi Kanat'],['ÇKN','Çıkış Kanadı']]},
- OOS:{ip:[['OOS','Ofansif Orta Saha'],['İOK','İleri Oyun Kurucu'],['SRB','Serbest Rol'],['İF','İç Forvet'],['GF','Gizli Forvet']],oop:[['OOS','Ofansif Orta Saha'],['TOO','Takipçi OOS'],['ÇO','Çıkış Oyuncusu']]},
- FVM:{ip:[['MF','Merkez Forvet'],['PS','Pivot Santrafor'],['FO','Fırsatçı Oyuncu'],['YF','Yardımcı Forvet'],['S9','Sahte 9'],['İF','İç Forvet']],oop:[['MF','Merkez Forvet'],['ÇF','Çıkış Forveti'],['TF','Takipçi Forvet'],['OOS','Ofansif Orta Saha']]},
- FVW:{ip:[['KF','Kanat Forvet'],['İF','İç Forvet'],['KNT','Kanat']],oop:[['KF','Kanat Forvet'],['TK','Takipçi Kanat'],['ÇKN','Çıkış Kanadı']]}
+ // Kaleci
+ KL:{ip:[['KL','Kaleci'],['OKK','Oyun Kurucu Kaleci'],['GK','Garantici Kaleci']],
+     oop:[['KL','Kaleci'],['ÇK','Çizgi Kalecisi'],['LK','Libero Kaleci']]},
+ // Stoper
+ DFM:{ip:[['S','Stoper'],['OKS','Oyun Kurucu Stoper'],['İÇS','İleri Çıkan Stoper'],['GS','Garantici Stoper']],
+      oop:[['S','Stoper'],['KGS','Kademeye Giren Stoper'],['ÖÇS','Öne Çıkan Stoper']]},
+ // Bek + Kanat Bek
+ DFW:{ip:[['B','Bek'],['İKB','İçe Kat Eden Bek'],['KB','Kanat Bek'],['İLB','İleri Kanat Bek'],['OKB','Oyun Kurucu Kanat Bek'],['İKK','İçe Kat Eden Kanat Bek']],
+      oop:[['B','Bek'],['SB','Savunmada Kalan Bek'],['BB','Baskıcı Bek'],['KB','Kanat Bek'],['SKB','Savunmada Kalan Kanat Bek'],['BKB','Baskıcı Kanat Bek']]},
+ // Defansif Orta Saha
+ DOS:{ip:[['DOS','Defansif Orta Saha'],['GOK','Geriden Oyun Kurucu'],['YS','Yarı Stoper'],['İYO','İki Yönlü Orta Saha'],['İYK','İki Yönlü Oyun Kurucu']],
+      oop:[['DOS','Defansif Orta Saha'],['GÇD','Geriye Çekilen DOS'],['PD','Perdeleyen DOS'],['KKD','Kanadı Kapatan DOS']]},
+ // Merkez Orta Saha
+ OSM:{ip:[['OS','Merkez Orta Saha'],['OK','Orta Saha Oyun Kurucusu'],['GOS','Geniş Merkez Orta Saha'],['İYO','İki Yönlü Orta Saha'],['İYK','İki Yönlü Oyun Kurucu'],['KOS','Koridor Orta Sahası'],['İOK','İleri Oyun Kurucu']],
+      oop:[['OS','Merkez Orta Saha'],['BOS','Baskıcı Orta Saha'],['POS','Perdeleyen Orta Saha'],['KKO','Kanadı Kapatan Orta Saha']]},
+ // Kanat Orta Saha + Kanat
+ OSW:{ip:[['KO','Kanat Orta Saha'],['KNT','Kanat'],['İK','İçe Kat Eden Kanat'],['OKN','Oyun Kurucu Kanat']],
+      oop:[['KO','Kanat Orta Saha'],['TKO','Takipçi Kanat Orta Saha'],['ÇKO','Çıkış Kanat Orta Sahası'],['KNT','Kanat'],['TK','Takipçi Kanat']]},
+ // Ofansif Orta Saha
+ OOS:{ip:[['OOS','Ofansif Orta Saha'],['İOK','İleri Oyun Kurucu'],['KOS','Koridor Orta Sahası'],['SRB','Serbest Rol'],['GF','Gizli Forvet']],
+      oop:[['OOS','Ofansif Orta Saha'],['MBO','Merkezde Bekleyen OOS'],['KAO','Kanada Açılan OOS'],['TOO','Takipçi OOS']]},
+ // Santrafor
+ FVM:{ip:[['MF','Merkez Forvet'],['KF','Koridor Forveti'],['YF','Yardımcı Forvet'],['S9','Sahte 9'],['FO','Fırsatçı Oyuncu'],['PS','Pivot Santrafor']],
+      oop:[['MF','Merkez Forvet'],['MBF','Merkezde Bekleyen Forvet'],['KAF','Kanada Açılan Forvet'],['TF','Takipçi Forvet']]},
+ // Kanat Forvet
+ FVW:{ip:[['İF','İç Forvet'],['KFV','Kanat Forvet'],['İK','İçe Kat Eden Kanat'],['OKN','Oyun Kurucu Kanat'],['KNT','Kanat']],
+      oop:[['İBK','İçeride Bekleyen Kanat'],['TK','Takipçi Kanat'],['KBK','Kanatta Bekleyen Kanat'],['KNT','Kanat']]}
 };
 const slotGrp=s=>{const w=s[0]<35||s[0]>65,c=s[2];return c==='KL'?'KL':c==='DF'?(w?'DFW':'DFM'):c==='DOS'?'DOS':c==='OOS'?'OOS':c==='OS'?(w?'OSW':'OSM'):(w?'FVW':'FVM')};
 const defRoles=(fk,ph)=>FORM[fk].map(s=>ROLE[slotGrp(s)][ph?'oop':'ip'][0][0]);
@@ -626,7 +644,7 @@ function draw(){
   const ids=new Set(t.players.map(p=>p.id)); t.pids=t.pids.map(x=>ids.has(x)?x:'');
   if(!Array.isArray(t.bench)) t.bench=t.players.map(p=>p.id).filter(x=>!t.pids.includes(x)).slice(0,5);
   t.bench=t.bench.filter(x=>ids.has(x)&&!t.pids.includes(x));
-  if(t.tv!==3){t.ph.ip.roles=defRoles(t.ph.ip.f,0);t.ph.oop.roles=defRoles(t.ph.oop.f,1);t.tv=3;t.opp=t.opp||'Rakip Takım';t.tacName=t.tacName||'Taktik 1';t.system=t.system||'Sıfırdan'}
+  if(t.tv!==4){t.ph.ip.roles=defRoles(t.ph.ip.f,0);t.ph.oop.roles=defRoles(t.ph.oop.f,1);t.tv=4;t.opp=t.opp||'Rakip Takım';t.tacName=t.tacName||'Taktik 1';t.system=t.system||'Sıfırdan'}
   if(!t.instr)t.instr={}; if(!Array.isArray(t.tacs)){t.tacs=[{}];t.tacI=0}
   drawTop(); drawWarn();
   $('main').innerHTML=S.tab==='kadro'?viewKadro():S.tab==='taktik'?viewTaktik():viewProfil();
