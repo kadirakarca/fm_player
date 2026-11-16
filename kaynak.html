@@ -105,7 +105,7 @@ button{background:none;border:0;padding:0;cursor:pointer;text-align:inherit}
 .dot{position:absolute;width:13px;height:13px;border-radius:50%;background:#0f2a1c;transform:translate(-50%,-50%);z-index:1}
 .rr .rn{text-align:left}
 .dot.d1{background:#f59a23}.dot.d2{background:#63e36f;box-shadow:0 0 0 2px #fff}
-.dot.sel{box-shadow:0 0 0 2px #fff,0 0 0 5px var(--accent)}
+.dot.psel::after{content:"";position:absolute;inset:-7px;border:2px solid #fff;border-radius:4px}
 .cen{text-align:center}
 .seg{display:flex;justify-content:center;margin:6px 0}
 .seg button{padding:6px 10px;font-weight:600;font-size:13px;border:1px solid var(--line);background:var(--tile2)}
@@ -569,7 +569,7 @@ function viewProfil(){
   const gk=p.attrs.tek[0]&&p.attrs.tek[0][0]===KAL[0];
   return sub+hdr+`<section class="pn main">
     <div class="cpos"><p class="ct"><span>Pozisyonlar</span></p><b>${F('p.pos','Kısa mevki (KL, DF, OS, FV)','Mevki')}</b>
-      <div class="mp">${DOTS.map((d,i)=>`<button class="dot d${p.posmap[i]||0} ${i===ps?'sel':''}" data-dot="${i}" style="left:${d[0]}%;top:${d[1]}%" aria-label="${DOTN[i]}"></button>`).join('')}</div>
+      <div class="mp">${DOTS.map((d,i)=>`<button class="dot d${p.posmap[i]||0} ${i===ps?'psel':''}" data-dot="${i}" style="left:${d[0]}%;top:${d[1]}%" aria-label="${DOTN[i]}"></button>`).join('')}</div>
       <div class="cen"><b>${DOTN[ps]}</b> · ${['Oynayamaz','Yapabilir','Doğal'][p.posmap[ps]||0]}</div>
       ${S.edit?'<p class="note cen">Noktaya dokun: o mevkinin rolleri açılır. Seçili noktaya tekrar dokun: oynayabilirliği değişir.</p>':''}
       <div class="seg"><button data-rph="ip" class="${rp==='ip'?'on':''}">${PHN.ip}</button><button data-rph="oop" class="${rp==='oop'?'on':''}">${PHN.oop}</button></div>
