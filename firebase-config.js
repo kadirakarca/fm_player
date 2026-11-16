@@ -1,10 +1,10 @@
-// Firebase konsolundan (Proje ayarları > Uygulamalarınız > Web uygulaması) aldığın değerleri buraya yapıştır.
+// Firebase web uygulaması bilgileri (proje: halisaha-menajeri-ka-84ae5).
 // Bu değerler gizli değildir; güvenliği firestore.rules dosyasındaki kurallar sağlar.
 export const firebaseConfig = {
-  apiKey: "BURAYA_API_KEY",
-  authDomain: "BURAYA_PROJE_ID.firebaseapp.com",
-  projectId: "BURAYA_PROJE_ID",
-  storageBucket: "BURAYA_PROJE_ID.appspot.com",
-  messagingSenderId: "BURAYA_SENDER_ID",
-  appId: "BURAYA_APP_ID"
+  apiKey: "AIzaSyBCyCiB-ZGFjyaWakW0M6ID9Wv-XmtkHzU",
+  authDomain: "halisaha-menajeri-ka-84ae5.firebaseapp.com",
+  projectId: "halisaha-menajeri-ka-84ae5",
+  storageBucket: "halisaha-menajeri-ka-84ae5.firebasestorage.app",
+  messagingSenderId: "445098509260",
+  appId: "1:445098509260:web:d42ddfebbf550478049369"
 };
